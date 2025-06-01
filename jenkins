@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Getting Jenkins repo
+wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+# Adding Jenkins repository GPG key
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+# Installing Java dependency (Amazon Corretto 17)
+sudo yum install -y java-17-amazon-corretto
+
+# Installing Jenkins
+sudo yum install -y jenkins
+
+# Enabling and starting Jenkins service
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+
+# Status check
+sudo systemctl status jenkins
+
+
+===================================================================
+
+
+---
+- name: Jenkins playbook
+hosts: all
+connection: ssh
+tasks: 
+  - name: Install java dependency
+    yum: name:java-17-amazon-corretto-devel state=present
+	
+  - name: get reposotiory from internet
+    get_url:
+	   url: "https://pkg.jenkins.io/redhat/jenkins.repo"
+	   dest: "/etc/yum.repos.d/jenkins.repo"
+
+  - name: get from jenkins repo:
+    ansible.builtin.rpm_key:
+      key: "rpm --import https://pkg.jenkins.io/redhat/jenkins.io-2023.key"
+	  state: present
+	  
+  - name: install jenkins
+    yum: name=jenkins state=presnt
+	
+  - name: start Jenkins
+    service: name=jenkins state=started
+	
+	
+---
