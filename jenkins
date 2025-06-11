@@ -26,7 +26,7 @@ sudo systemctl status jenkins
 
 ---
 - name: Jenkins playbook
-hosts: all
+hosts: localhost
 connection: ssh
 tasks: 
   - name: Install java dependency
